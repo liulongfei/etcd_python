@@ -5,8 +5,13 @@
 
 
 from __future__ import unicode_literals
+import sys
 import os
-from urllib import quote, unquote
+try:
+    from urllib import quote, unquote
+except ImportError:
+    from urllib.parse import quote, unquote
+
 from argparse import ArgumentParser
 from etcd.client import Client
 
@@ -114,14 +119,15 @@ def main():
     elif options.get('decode') and options.get('type') == 'get' and options.get('value'):
         # 获取文件数据 并转码写入文件
         message = client.get_data(key=options.get('key'))
-        # etcd get 得到的 unicode, 转化为str
-        message_str = message.encode('ascii')
+        if sys.version_info < (3, 0):
+            # etcd get 得到的 unicode, 转化为str
+            message = message.encode('ascii')
 
         with open(options.get('value'), 'w') as f:
             # unquote 只能处理 str 类型
-            f.write(unquote(message_str))
+            f.write(unquote(message))
 
-        return message_str
+        return message
     elif options.get('decode') and options.get('type') == 'get':
         # 获取数据 并转码
         message = client.get_data(key=options.get('key'))
@@ -136,6 +142,7 @@ def main():
         with open(options.get('value'), 'w') as f:
             # unquote 只能处理 str 类型
             f.write(message)
+        return message
 
     elif options.get('type') == 'get':
         # 获取普通数据
