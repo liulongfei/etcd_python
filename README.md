@@ -1,5 +1,5 @@
 ~~etcd_python~~  
-在 Kubernetes 编排中，使用 ConfigMap 是最佳解决方案。
+**在 Kubernetes 编排中，使用 ConfigMap 是最佳解决方案。**
 
 ### 功能
 
